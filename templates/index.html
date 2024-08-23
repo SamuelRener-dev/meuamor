@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contagem de Tempo</title>
+    <style>
+        /* Estilo geral da página */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden; /* Impede rolagem para melhor visualização da música */
+        }
+
+        /* Contêiner principal */
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 90%; /* Limita a largura máxima do contêiner */
+            box-sizing: border-box;
+        }
+
+        /* Estilo do slideshow */
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Largura máxima do slideshow */
+            margin: 0 auto;
+        }
+
+        #slideshow {
+            width: 100%;
+            height: auto; /* Mantém a proporção da imagem */
+            max-height: 400px; /* Limita a altura máxima da imagem */
+            object-fit: cover; /* Ajusta a imagem para cobrir o contêiner sem distorcer */
+            border-radius: 10px;
+            cursor: pointer; /* Altera o cursor para indicar que é clicável */
+        }
+
+        /* Estilo da contagem de tempo */
+        .result {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px; /* Espaçamento entre os itens */
+            margin-top: 20px;
+        }
+
+        .time-unit {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .time-unit span {
+            font-weight: bold;
+        }
+
+        /* Estilo da mensagem */
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+            font-style: italic;
+            width: 100%; /* Garante que a mensagem use a largura total do contêiner */
+            max-width: 600px; /* Largura máxima da mensagem igual à do slideshow */
+            margin: 20px auto; /* Centraliza a mensagem */
+            padding: 0 10px; /* Adiciona algum espaço nas laterais */
+        }
+
+        .message span {
+            color: #f44336; /* Cor do coração */
+        }
+
+        /* Estilo do botão de controle de áudio */
+        #audio-controls {
+            margin-bottom: 20px; /* Espaço entre o botão e a mensagem */
+            text-align: center;
+        }
+
+        #audio-controls button {
+            background-color: transparent;
+            border: none;
+            font-size: 2em; /* Tamanho do coração */
+            color: #f44336; /* Cor do coração */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        #audio-controls button:hover {
+            color: #d32f2f; /* Cor do coração quando o mouse passa por cima */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Seção do slideshow -->
+        <div class="slideshow-container">
+            <img id="slideshow" src="http://127.0.0.1:5000/static/images/image3.jpg" alt="Slideshow Image">
+        </div>
+
+        <!-- Seção da contagem de tempo -->
+        <h1>Juntos a</h1>
+        <div class="result" id="result">
+            <div class="time-unit"><span>Meses:</span> {{ time_diff.months }}</div>
+            <div class="time-unit"><span>Dias:</span> {{ time_diff.days }}</div>
+            <div class="time-unit"><span>Horas:</span> {{ time_diff.hours }}</div>
+            <div class="time-unit"><span>Minutos:</span> {{ time_diff.minutes }}</div>
+            <div class="time-unit"><span>Segundos:</span> {{ time_diff.seconds }}</div>
+        </div>
+
+        <!-- Controle de áudio -->
+        <div id="audio-controls">
+            <button onclick="toggleAudio()">&#10084;</button> <!-- Código do coração -->
+        </div>
+
+        <!-- Mensagem de amor -->
+        <p class="message">
+            Para você se lembrar de quantos dias se passaram da minha melhor decisão... e que a gente possa voltar aqui e ver que os dias só aumentaram... eu te amo pra sempre minha princesa <span>❤</span>
+        </p>
+    </div>
+
+    <!-- Tag de áudio para a música de fundo -->
+    <audio id="background-music" src="http://127.0.0.1:5000/static/audio/love.mp3" autoplay loop></audio>
+
+    <script>
+        // Array com os caminhos das imagens
+        const images = [
+            'http://127.0.0.1:5000/static/images/image1.jpg',
+            'http://127.0.0.1:5000/static/images/image2.jpg',
+            'http://127.0.0.1:5000/static/images/image3.jpg',
+            'http://127.0.0.1:5000/static/images/image4.jpg',
+            'http://127.0.0.1:5000/static/images/image5.jpg',
+            'http://127.0.0.1:5000/static/images/image6.jpg'
+        ];
+        
+        let currentIndex = 0;
+
+        // Função para trocar a imagem
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            const imageElement = document.getElementById('slideshow');
+            imageElement.src = images[currentIndex];
+        }
+
+        // Inicializa com a primeira imagem
+        document.getElementById('slideshow').src = images[currentIndex];
+
+        // Adiciona o evento de clique à imagem para trocar a imagem
+        document.getElementById('slideshow').addEventListener('click', nextImage);
+
+        // Troca de imagem automática a cada 5 segundos
+        setInterval(nextImage, 5000);
+
+        // Atualiza a contagem de tempo a cada segundo
+        function updateTime() {
+            const fixedDate = new Date('2024-06-19T12:20:00');
+            const now = new Date();
+            const diffInMs = now - fixedDate;
+            const diffInSeconds = Math.floor(diffInMs / 1000);
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            const diffInDays = Math.floor(diffInHours / 24);
+            const years = now.getFullYear() - fixedDate.getFullYear();
+            const months = now.getMonth() - fixedDate.getMonth() + (years * 12);
+            const totalDaysFromMonths = Math.floor(months * 30.44);
+            const days = diffInDays - totalDaysFromMonths;
+            const hours = Math.floor(diffInHours % 24);
+            const minutes = Math.floor(diffInMinutes % 60);
+            const seconds = Math.floor(diffInSeconds % 60);
+
+            document.getElementById('result').innerHTML = 
+                `<div class="time-unit"><span>Meses:</span> ${months}</div>` +
+                `<div class="time-unit"><span>Dias:</span> ${days}</div>` +
+                `<div class="time-unit"><span>Horas:</span> ${hours}</div>` +
+                `<div class="time-unit"><span>Minutos:</span> ${minutes}</div>` +
+                `<div class="time-unit"><span>Segundos:</span> ${seconds}</div>`;
+        }
+
+        // Atualiza a contagem de tempo a cada segundo
+        setInterval(updateTime, 1000);
+
+        // Função para alternar o estado do áudio
+        function toggleAudio() {
+            const audio = document.getElementById('background-music');
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+    </script>
+</body>
+</html>
